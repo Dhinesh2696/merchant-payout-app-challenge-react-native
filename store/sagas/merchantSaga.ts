@@ -3,6 +3,7 @@ import * as actions from '../actions/merchantActions';
 import * as payoutActions from "../actions/payoutActions";
 import { api } from '../../utils/api';
 import i18n from '../../constants/i18n';
+import { getDeviceId } from "../../modules/screen-security";
 import { 
   MerchantDataResponse, 
   PaginatedActivityResponse, 
@@ -34,7 +35,19 @@ function* createPayoutSaga(action: {
   payload: CreatePayoutRequest;
 }) {
   try {
-    const data: PayoutResponse = yield call(api.createPayout, action.payload);
+    let deviceId = "unknown";
+    try {
+      deviceId = yield call(getDeviceId);
+    } catch (e) {
+      console.warn("Native ScreenSecurity module not available:", e);
+    }
+
+    const payloadWithId: CreatePayoutRequest = {
+      ...action.payload,
+      device_id: deviceId,
+    };
+
+    const data: PayoutResponse = yield call(api.createPayout, payloadWithId);
     yield put(payoutActions.createPayoutSuccess(data));
     // Refresh merchant data (balance) after successful payout
     yield put(actions.fetchMerchantDataRequest());
