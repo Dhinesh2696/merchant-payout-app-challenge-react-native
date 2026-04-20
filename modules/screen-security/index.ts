@@ -1,10 +1,13 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { NativeModules } from "react-native";
 
-// It loads the native module object from the JSI or falls back to the bridge on older versions of the SDK.
-const ScreenSecurityModule = requireNativeModule('ScreenSecurity');
+const { ScreenSecurity } = NativeModules;
 
-export function getDeviceId(): string {
-  return ScreenSecurityModule.getDeviceId();
+export async function getDeviceId(): Promise<string> {
+  if (!ScreenSecurity) {
+    console.warn("Native ScreenSecurity module is not available");
+    return "unknown";
+  }
+  return ScreenSecurity.getDeviceId();
 }
 
-export default ScreenSecurityModule;
+export default ScreenSecurity;
