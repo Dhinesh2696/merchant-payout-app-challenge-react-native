@@ -6,8 +6,30 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useMSW } from '../mocks/useMSW';
 
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "../store";
+import NetInfo from "@react-native-community/netinfo";
+import { setOfflineStatus } from "../store/actions/appActions";
+import { useEffect } from "react";
+
+import { OfflineBanner } from "@/components/offline-banner";
+
+function ConnectivityBanner() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Subscribe to network state changes
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      dispatch(setOfflineStatus(!state.isConnected));
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [dispatch]);
+
+  return <OfflineBanner />;
+}
 
 function RootNavigator() {
   return (
@@ -32,6 +54,7 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <ConnectivityBanner />
         <RootNavigator />
         <StatusBar style="auto" />
       </ThemeProvider>
