@@ -9,8 +9,16 @@ import {
 
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `API Error: ${response.status}`);
+    const rawText = await response.text().catch(() => "");
+    let message = `API Error: ${response.status}`;
+    try {
+      const errorData = JSON.parse(rawText);
+      message = errorData.error || errorData.message || message;
+    } catch (e) {
+      if (rawText) message = rawText;
+    }
+
+    throw new Error(message);
   }
   return response.json();
 };

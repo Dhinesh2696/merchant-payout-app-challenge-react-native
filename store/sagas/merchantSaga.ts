@@ -1,5 +1,6 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/merchantActions';
+import * as payoutActions from "../actions/payoutActions";
 import { api } from '../../utils/api';
 import i18n from '../../constants/i18n';
 import { 
@@ -28,8 +29,27 @@ function* fetchActivitySaga(action: { type: string, payload?: string }) {
   }
 }
 
+function* createPayoutSaga(action: {
+  type: string;
+  payload: CreatePayoutRequest;
+}) {
+  try {
+    const data: PayoutResponse = yield call(api.createPayout, action.payload);
+    yield put(payoutActions.createPayoutSuccess(data));
+    // Refresh merchant data (balance) after successful payout
+    yield put(actions.fetchMerchantDataRequest());
+  } catch (error: any) {
+    yield put(
+      payoutActions.createPayoutFailure(
+        error.message || i18n.t("errors.payoutFailed"),
+      ),
+    );
+  }
+}
+
 // Watchers
 export function* watchMerchantSaga() {
   yield takeLatest(actions.fetchMerchantDataRequest.type, fetchMerchantDataSaga);
   yield takeLatest(actions.fetchActivityRequest.type, fetchActivitySaga);
+  yield takeLatest(payoutActions.createPayoutRequest.type, createPayoutSaga);
 }

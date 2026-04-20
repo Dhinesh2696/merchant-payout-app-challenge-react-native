@@ -15,6 +15,7 @@ module.exports = {
     '!**/node_modules/**',
   ],
   moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
     '^msw/node$': '<rootDir>/node_modules/msw/lib/node/index.js',
   },
 };
