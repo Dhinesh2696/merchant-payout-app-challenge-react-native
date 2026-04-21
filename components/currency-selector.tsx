@@ -59,7 +59,11 @@ export function CurrencySelector({ value, onSelect, style }: CurrencySelectorPro
           <ThemedView style={[styles.modalContent, { backgroundColor: cardBackgroundColor }]}>
             <View style={[styles.header, { borderBottomColor: borderColor }]}>
               <View style={[styles.handle, { backgroundColor: borderColor }]} />
+              <ThemedText type="defaultSemiBold" style={styles.title}>
+                {i18n.t('payout.currencyLabel')}
+              </ThemedText>
             </View>
+
             
             <FlatList
               data={SUPPORTED_CURRENCIES}
@@ -135,7 +139,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
+  title: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
   separator: {
+
     height: 1,
     marginHorizontal: 24,
   },

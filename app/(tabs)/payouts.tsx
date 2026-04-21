@@ -84,12 +84,16 @@ export default function PayoutsScreen() {
 
       // Step 5: Native Biometric for Payouts over £1,000.00
       if (amountInCents >= BIOMETRIC_THRESHOLD) {
-        const authenticated = await ScreenSecurity.isBiometricAuthenticated();
+        const authenticated = await ScreenSecurity.isBiometricAuthenticated(
+          i18n.t("security.biometricTitle"),
+          i18n.t("security.biometricSubtitle"),
+        );
         if (!authenticated) {
           // Abort if user canceled
           return;
         }
       }
+
 
       dispatch(
         createPayoutRequest({
@@ -104,13 +108,14 @@ export default function PayoutsScreen() {
         err.code === "biometric_not_enrolled" ||
         err.code === "biometric_not_available"
       ) {
-        Alert.alert("Security Required", err.message);
+        Alert.alert(i18n.t("security.alertTitle"), err.message);
       } else {
         console.error("Payout error:", err);
         // Fallback for other errors
-        Alert.alert("Error", i18n.t("common.error"));
+        Alert.alert(i18n.t("common.error"), i18n.t("result.errorDefault"));
       }
     }
+
   };
 
 
@@ -139,8 +144,9 @@ export default function PayoutsScreen() {
                 {i18n.t("payout.title")}
               </ThemedText>
               <ThemedText style={[styles.subtitle, { color: theme.secondaryText }]}>
-                Transfer funds to your bank account securely.
+                {i18n.t("payout.subtitle")}
               </ThemedText>
+
             </ThemedView>
 
             <ThemedView style={styles.form}>
@@ -152,8 +158,9 @@ export default function PayoutsScreen() {
                   <ThemedView style={[styles.amountContainer, { borderColor: theme.border }]}>
                     <TextInput
                       style={[styles.amountInput, { color: theme.text }]}
-                      placeholder="0.00"
+                      placeholder={i18n.t("payout.amountPlaceholder")}
                       placeholderTextColor={theme.icon}
+
                       keyboardType="decimal-pad"
                       value={amount}
                       onChangeText={handleAmountChange}

@@ -26,7 +26,7 @@ export default {
   },
   payout: {
     title: "Send Payout",
-    subtitle: "Send funds to a bank account",
+    subtitle: "Transfer funds to your bank account securely.",
     amountLabel: "Amount",
     amountPlaceholder: "0.00",
     currencyLabel: "Currency",
@@ -57,5 +57,13 @@ export default {
       to: "To",
       errorDefault: "Service temporarily unavailable. Please try again later.",
     },
+  },
+  security: {
+    alertTitle: "Security Alert",
+    screenshotDetected: "Screenshot or screen recording detected. For your security, please avoid capturing sensitive financial information.",
+    biometricTitle: "Authorize Payout",
+    biometricSubtitle: "Confirm your payout request",
+    biometricNotEnrolled: "Please setup security settings (Passcode/Biometrics) in your phone settings to authorize large payouts.",
+    biometricNotAvailable: "Security authentication is not available on this device",
   },
 };

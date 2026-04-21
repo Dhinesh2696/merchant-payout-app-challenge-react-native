@@ -3,14 +3,47 @@ import UIKit
 import LocalAuthentication
 
 @objc(ScreenSecurity)
-class ScreenSecurity: NSObject, RCTBridgeModule {
+class ScreenSecurity: RCTEventEmitter {
   
-  static func moduleName() -> String! {
+  private var hasListeners = false
+
+  override static func moduleName() -> String! {
     return "ScreenSecurity"
   }
   
-  static func requiresMainQueueSetup() -> Bool {
+  override static func requiresMainQueueSetup() -> Bool {
     return true
+  }
+
+  override func supportedEvents() -> [String]! {
+    return ["onScreenshotTaken"]
+  }
+
+  override func startObserving() {
+    hasListeners = true
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleScreenshot),
+      name: UIApplication.userDidTakeScreenshotNotification,
+      object: nil
+    )
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleScreenshot),
+      name: UIScreen.capturedDidChangeNotification,
+      object: nil
+    )
+  }
+
+  override func stopObserving() {
+    hasListeners = false
+    NotificationCenter.default.removeObserver(self)
+  }
+
+  @objc private func handleScreenshot() {
+    if hasListeners {
+      sendEvent(withName: "onScreenshotTaken", body: ["type": "screenshot"])
+    }
   }
   
   // Step 4: Device Identity
@@ -26,16 +59,14 @@ class ScreenSecurity: NSObject, RCTBridgeModule {
   }
 
   // Step 5: Biometric Authentication
-  @objc(isBiometricAuthenticated:rejecter:)
-  func isBiometricAuthenticated(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+  @objc(isBiometricAuthenticated:subtitle:resolver:rejecter:)
+  func isBiometricAuthenticated(title: String, subtitle: String, _ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
     let context = LAContext()
     var error: NSError?
 
     // Check if biometric authentication or passcode is available
     if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
-      let reason = "Authorize your payout request"
-      
-      context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { (success, evaluateError) in
+      context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: subtitle) { (success, evaluateError) in
         DispatchQueue.main.async {
           if success {
             resolve(true)
@@ -58,16 +89,17 @@ class ScreenSecurity: NSObject, RCTBridgeModule {
       DispatchQueue.main.async {
         if let error = error {
           if error.code == LAError.biometryNotEnrolled.rawValue {
-            reject("biometric_not_enrolled", "Please setup security settings (Passcode/Biometrics) in your phone settings to authorize large payouts.", nil)
+            reject("biometric_not_enrolled", subtitle, nil)
           } else {
             reject("biometric_not_available", error.localizedDescription, nil)
           }
         } else {
-          reject("biometric_not_available", "Security authentication is not available on this device", nil)
+          reject("biometric_not_available", title, nil)
         }
       }
     }
-
   }
+
 }
+
 

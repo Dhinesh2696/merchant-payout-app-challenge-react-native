@@ -13,6 +13,28 @@ import { setOfflineStatus } from "../store/actions/appActions";
 import { useEffect } from "react";
 
 import { OfflineBanner } from "@/components/offline-banner";
+import { addScreenshotListener } from "@/modules/screen-security";
+import { Alert } from "react-native";
+import i18n from "@/constants/i18n";
+
+function SecurityMonitor() {
+  useEffect(() => {
+    const subscription = addScreenshotListener(() => {
+      Alert.alert(
+        i18n.t("security.alertTitle"),
+        i18n.t("security.screenshotDetected"),
+        [{ text: i18n.t("common.done") }]
+      );
+    });
+
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  return null;
+}
 
 function ConnectivityBanner() {
   const dispatch = useDispatch();
@@ -54,6 +76,7 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <SecurityMonitor />
         <ConnectivityBanner />
         <RootNavigator />
         <StatusBar style="auto" />
@@ -61,3 +84,4 @@ export default function RootLayout() {
     </Provider>
   );
 }
+

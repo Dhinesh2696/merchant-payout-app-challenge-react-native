@@ -12,7 +12,7 @@ import {
 } from '../../types/api';
 
 // Workers
-function* fetchMerchantDataSaga() {
+export function* fetchMerchantDataSaga() {
   try {
     const data: MerchantDataResponse = yield call(api.getMerchantData);
     yield put(actions.fetchMerchantDataSuccess(data));
@@ -21,7 +21,7 @@ function* fetchMerchantDataSaga() {
   }
 }
 
-function* fetchActivitySaga(action: { type: string, payload?: string }) {
+export function* fetchActivitySaga(action: { type: string, payload?: string }) {
   try {
     const data: PaginatedActivityResponse = yield call(api.getActivity, action.payload);
     yield put(actions.fetchActivitySuccess(data));
@@ -30,7 +30,7 @@ function* fetchActivitySaga(action: { type: string, payload?: string }) {
   }
 }
 
-function* createPayoutSaga(action: {
+export function* createPayoutSaga(action: {
   type: string;
   payload: CreatePayoutRequest;
 }) {
