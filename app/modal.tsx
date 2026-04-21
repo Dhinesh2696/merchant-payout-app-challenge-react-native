@@ -54,19 +54,27 @@ export default function ModalScreen() {
 
   const renderItem = ({ item }: { item: any }) => (
     <ThemedView style={styles.activityItem}>
-      <ThemedView style={[styles.activityIconContainer, { backgroundColor: theme.buttonDisabled }]}>
-        <Ionicons 
-          name={item.amount < 0 ? "arrow-up-outline" : "arrow-down-outline"} 
-          size={16} 
-          color={item.amount < 0 ? theme.negative : theme.positive} 
+      <ThemedView
+        style={[
+          styles.activityIconContainer,
+          { backgroundColor: theme.buttonDisabled },
+        ]}
+      >
+        <Ionicons
+          name={item.amount < 0 ? "arrow-up-outline" : "arrow-down-outline"}
+          size={16}
+          color={item.amount < 0 ? theme.negative : theme.positive}
         />
       </ThemedView>
       <ThemedView style={styles.activityMain}>
         <ThemedText style={[styles.activityDescription, { color: theme.text }]}>
           {item.description}
         </ThemedText>
-        <ThemedText style={[styles.activityDate, { color: theme.secondaryText }]}>
-          {moment(item.date).format("HH:mm")} • {capitalize(item.status)}
+        <ThemedText
+          style={[styles.activityDate, { color: theme.secondaryText }]}
+        >
+          {moment(item.date).format("DD MMM YYYY, HH:mm")} •{" "}
+          {capitalize(item.status)}
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.activityRight}>
@@ -152,7 +160,6 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     paddingVertical: 12,
-    marginTop: 8,
   },
   sectionTitle: {
     fontSize: 13,

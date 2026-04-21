@@ -129,7 +129,10 @@ export default function PayoutsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.background }]}
+      edges={["top"]}
+    >
       <ThemedView style={styles.container}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -143,10 +146,11 @@ export default function PayoutsScreen() {
               <ThemedText style={styles.title}>
                 {i18n.t("payout.title")}
               </ThemedText>
-              <ThemedText style={[styles.subtitle, { color: theme.secondaryText }]}>
+              <ThemedText
+                style={[styles.subtitle, { color: theme.secondaryText }]}
+              >
                 {i18n.t("payout.subtitle")}
               </ThemedText>
-
             </ThemedView>
 
             <ThemedView style={styles.form}>
@@ -155,12 +159,16 @@ export default function PayoutsScreen() {
                   {i18n.t("payout.amountLabel")}
                 </ThemedText>
                 <ThemedView style={styles.row}>
-                  <ThemedView style={[styles.amountContainer, { borderColor: theme.border }]}>
+                  <ThemedView
+                    style={[
+                      styles.amountContainer,
+                      { borderColor: theme.border },
+                    ]}
+                  >
                     <TextInput
                       style={[styles.amountInput, { color: theme.text }]}
                       placeholder={i18n.t("payout.amountPlaceholder")}
                       placeholderTextColor={theme.icon}
-
                       keyboardType="decimal-pad"
                       value={amount}
                       onChangeText={handleAmountChange}
@@ -179,15 +187,19 @@ export default function PayoutsScreen() {
                   {i18n.t("payout.ibanLabel")}
                 </ThemedText>
                 <TextInput
-                  style={[styles.ibanInput, { color: theme.text, borderColor: theme.border }]}
+                  style={[
+                    styles.ibanInput,
+                    { color: theme.text, borderColor: theme.border },
+                  ]}
                   placeholder={i18n.t("payout.ibanPlaceholder")}
                   placeholderTextColor={theme.icon}
-                  autoCapitalize="characters"
                   value={iban}
                   onChangeText={setIban}
                   maxLength={34}
                 />
-                <ThemedText style={[styles.hint, { color: theme.secondaryText }]}>
+                <ThemedText
+                  style={[styles.hint, { color: theme.secondaryText }]}
+                >
                   {i18n.t("payout.ibanHint")}
                 </ThemedText>
               </ThemedView>
@@ -195,12 +207,25 @@ export default function PayoutsScreen() {
               <TouchableOpacity
                 style={[
                   styles.submitButton,
-                  { backgroundColor: isFormValid ? theme.buttonPrimary : theme.buttonDisabled }
+                  {
+                    backgroundColor: isFormValid
+                      ? theme.buttonPrimary
+                      : theme.buttonDisabled,
+                  },
                 ]}
                 onPress={handleInitiatePress}
                 disabled={!isFormValid}
               >
-                <ThemedText style={[styles.submitButtonText, { color: isFormValid ? theme.buttonPrimaryText : theme.buttonDisabledText }]}>
+                <ThemedText
+                  style={[
+                    styles.submitButtonText,
+                    {
+                      color: isFormValid
+                        ? theme.buttonPrimaryText
+                        : theme.buttonDisabledText,
+                    },
+                  ]}
+                >
                   {i18n.t("payout.continue")}
                 </ThemedText>
               </TouchableOpacity>

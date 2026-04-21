@@ -156,6 +156,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: theme.background }]}
+      edges={['top']}
     >
       <ThemedView style={styles.container}>
         {renderHeader()}
