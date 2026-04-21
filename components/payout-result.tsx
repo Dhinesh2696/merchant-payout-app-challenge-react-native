@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 import i18n from '../constants/i18n';
+import { formatCurrency } from '../utils/format';
 
 interface PayoutResultProps {
   visible: boolean;
@@ -31,18 +32,20 @@ export function PayoutResult({
   const successColor = useThemeColor({}, 'positive');
   const errorColor = useThemeColor({}, 'negative');
   const secondaryTextColor = useThemeColor({}, 'secondaryText');
+  const borderColor = useThemeColor({}, 'border');
+  const overlayColor = useThemeColor({}, 'overlay');
+  const buttonPrimaryText = useThemeColor({}, 'buttonPrimaryText');
 
   const getFormattedAmount = () => {
     if (!result) return "";
-    const symbol = result.currency === 'GBP' ? '£' : '€';
-    return `${symbol}${(result.amount / 100).toFixed(2)}`;
+    return formatCurrency(result.amount, result.currency);
   };
 
   const safeTopPadding = Math.max(insets.top, 50);
 
   return (
     <Modal visible={visible} transparent animationType="none">
-      <View style={[styles.overlay, { backgroundColor }]}>
+      <View style={[styles.overlay, { backgroundColor: overlayColor }]}>
         <ThemedView style={[styles.content, { paddingTop: safeTopPadding, backgroundColor }]}>
           <TouchableOpacity 
             style={[styles.xButton, { top: safeTopPadding }]} 
@@ -59,7 +62,7 @@ export function PayoutResult({
             <View 
               style={[
                 styles.iconCircle, 
-                { backgroundColor: 'transparent' }
+                { backgroundColor: 'transparent', borderColor }
               ]}
             >
               <Ionicons 
@@ -72,6 +75,7 @@ export function PayoutResult({
             <ThemedText 
               style={[
                 styles.statusTitle, 
+                { color: textColor },
                 !success && { color: errorColor }
               ]}
             >
@@ -92,7 +96,7 @@ export function PayoutResult({
               style={[styles.actionButton, { backgroundColor: buttonPrimary }]} 
               onPress={onClose}
             >
-              <ThemedText style={[styles.actionButtonText, { color: '#FFF' }]}>
+              <ThemedText style={[styles.actionButtonText, { color: buttonPrimaryText }]}>
                 {success ? i18n.t('payout.result.createAnother') : i18n.t('payout.result.tryAgain')}
               </ThemedText>
             </TouchableOpacity>
@@ -112,58 +116,63 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   xButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 24,
     zIndex: 10,
   },
   headerTitle: {
-    fontSize: 32,
-    lineHeight: 42,
-    fontWeight: '800',
-    marginTop: 20, 
-    marginBottom: 40,
+    fontSize: 28,
+    fontWeight: "800",
+    marginTop: 20,
+    marginBottom: 48,
+    letterSpacing: -0.5,
+    lineHeight: 36,
   },
   centerContent: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingBottom: 100,
   },
   iconCircle: {
-    width: 80,
-    height: 80,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 100,
+    height: 100,
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 32,
+    borderWidth: 2,
+    borderRadius: 0,
   },
   statusTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: "800",
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
+    letterSpacing: -0.5,
   },
   description: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 40,
     lineHeight: 24,
   },
   errorText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 40,
     lineHeight: 24,
   },
   actionButton: {
-    marginTop: 48,
-    paddingHorizontal: 32,
-    paddingVertical: 18,
-    borderRadius: 12,
-    minWidth: 240,
-    alignItems: 'center',
+    marginTop: 64,
+    height: 56,
+    minWidth: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 0,
   },
   actionButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "700",
   },
 });
+

@@ -14,20 +14,16 @@ export function ThemedButton({
   variant = 'primary',
   ...rest
 }: ThemedButtonProps) {
-  // Use provided colors or defaults based on variant
-  const backgroundColor = useThemeColor(
-    { 
-      light: lightColor || (variant === 'secondary' ? '#E5F6FF' : undefined), 
-      dark: darkColor || (variant === 'secondary' ? '#1A2B33' : undefined) 
-    }, 
-    'background'
-  );
+  const primaryColor = useThemeColor({ light: lightColor, dark: darkColor }, 'buttonPrimary');
+  const backgroundColor = variant === 'primary' ? primaryColor : 'transparent';
+  const borderColor = variant === 'outline' ? primaryColor : 'transparent';
+  const borderWidth = variant === 'outline' ? 1 : 0;
 
   return (
     <TouchableOpacity
       style={[
         styles.base,
-        variant === 'secondary' && { backgroundColor },
+        { backgroundColor, borderColor, borderWidth },
         style,
       ]}
       {...rest}
@@ -37,9 +33,10 @@ export function ThemedButton({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 12,
-    height: 50,
+    borderRadius: 0,
+    height: 56,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
+

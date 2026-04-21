@@ -5,6 +5,7 @@ import { ThemedView } from './themed-view';
 import { CurrencyText } from './currency-text';
 import { Currency } from '../types/api';
 import i18n from '../constants/i18n';
+import { formatCurrency } from '../utils/format';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 interface PayoutConfirmationProps {
@@ -33,6 +34,8 @@ export function PayoutConfirmation({
   const secondaryTextColor = useThemeColor({}, 'secondaryText');
   const cardBackgroundColor = useThemeColor({}, 'cardBackground');
   const borderColor = useThemeColor({}, 'border');
+  const overlayColor = useThemeColor({}, 'overlay');
+  const buttonPrimaryText = useThemeColor({}, 'buttonPrimaryText');
 
   const maskIban = (text: string) => {
     if (text.length < 8) return text;
@@ -40,14 +43,13 @@ export function PayoutConfirmation({
   };
 
   const getFormattedAmount = () => {
-    const symbol = currency === 'GBP' ? '£' : '€';
-    return `${symbol}${(amount / 100).toFixed(2)}`;
+    return formatCurrency(amount, currency);
   };
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <ThemedView style={[styles.content, { backgroundColor: cardBackgroundColor }]}>
+      <View style={[styles.overlay, { backgroundColor: overlayColor }]}>
+        <ThemedView style={[styles.content, { backgroundColor: cardBackgroundColor, borderColor }]}>
           <ThemedText style={styles.title}>{i18n.t('payout.confirm.title')}</ThemedText>
           
           <View style={styles.details}>
@@ -84,7 +86,7 @@ export function PayoutConfirmation({
               disabled={loading}
               style={[styles.confirmButton, { backgroundColor: loading ? buttonDisabled : buttonPrimary }]}
             >
-              <ThemedText style={[styles.confirmText, { color: loading ? buttonDisabledText : '#FFF' }]}>
+              <ThemedText style={[styles.confirmText, { color: loading ? buttonDisabledText : buttonPrimaryText }]}>
                 {loading ? i18n.t('payout.confirm.processing') : i18n.t('payout.confirm.confirm')}
               </ThemedText>
             </TouchableOpacity>
@@ -98,63 +100,66 @@ export function PayoutConfirmation({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     padding: 24,
   },
   content: {
-    borderRadius: 24,
-    padding: 24,
+    borderRadius: 0,
+    padding: 32,
+    borderWidth: 1,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 24,
+    fontWeight: '800',
     marginBottom: 32,
-    textAlign: 'center',
+    textAlign: 'left',
+    letterSpacing: -0.5,
   },
   details: {
-    marginBottom: 32,
+    marginBottom: 40,
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   label: {
-    fontSize: 15,
+    fontSize: 14,
+    fontWeight: '500',
   },
   value: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   divider: {
     height: 1,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  cancelButton: {
-    flex: 1,
-    height: 56,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: 'column',
+    gap: 12,
   },
   confirmButton: {
-    flex: 1,
     height: 56,
-    borderRadius: 12,
+    borderRadius: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  cancelText: {
-    fontSize: 16,
-    fontWeight: '600',
+  cancelButton: {
+    height: 56,
+    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
   },
   confirmText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
+  },
+  cancelText: {
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
+

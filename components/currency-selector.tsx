@@ -23,8 +23,11 @@ export function CurrencySelector({ value, onSelect, style }: CurrencySelectorPro
   const [modalVisible, setModalVisible] = useState(false);
   const tintColor = useThemeColor({}, 'tint');
   const textColor = useThemeColor({}, 'text');
+  const buttonPrimaryText = useThemeColor({}, 'buttonPrimaryText');
   const cardBackgroundColor = useThemeColor({}, 'cardBackground');
   const borderColor = useThemeColor({}, 'border');
+  const overlayColor = useThemeColor({}, 'overlay');
+
   
   const SUPPORTED_CURRENCIES = getSupportedCurrencies();
 
@@ -50,11 +53,11 @@ export function CurrencySelector({ value, onSelect, style }: CurrencySelectorPro
         onRequestClose={() => setModalVisible(false)}
       >
         <Pressable 
-          style={styles.overlay} 
+          style={[styles.overlay, { backgroundColor: overlayColor }]} 
           onPress={() => setModalVisible(false)}
         >
-          <ThemedView style={styles.modalContent}>
-            <View style={styles.header}>
+          <ThemedView style={[styles.modalContent, { backgroundColor: cardBackgroundColor }]}>
+            <View style={[styles.header, { borderBottomColor: borderColor }]}>
               <View style={[styles.handle, { backgroundColor: borderColor }]} />
             </View>
             
@@ -88,9 +91,9 @@ export function CurrencySelector({ value, onSelect, style }: CurrencySelectorPro
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 60,
+    borderRadius: 0,
+    borderWidth: 1.5,
+    height: 56,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -98,26 +101,28 @@ const styles = StyleSheet.create({
   },
   valueText: {
     fontSize: 16,
+    fontWeight: '600',
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
     paddingBottom: 40,
     maxHeight: '40%',
   },
   header: {
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
   },
   handle: {
     width: 40,
     height: 4,
     borderRadius: 2,
+    display: 'none', // Hide handle for minimalist look
   },
   option: {
     flexDirection: 'row',
@@ -128,9 +133,11 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     fontSize: 16,
+    fontWeight: '500',
   },
   separator: {
     height: 1,
     marginHorizontal: 24,
   },
 });
+

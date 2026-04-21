@@ -11,7 +11,7 @@ export function OfflineBanner() {
   const isOffline = useSelector(selectIsOffline);
   const insets = useSafeAreaInsets();
   const backgroundColor = useThemeColor({}, 'negative');
-  const textColor = '#FFFFFF';
+  const buttonPrimaryText = useThemeColor({}, 'buttonPrimaryText');
 
   if (!isOffline) return null;
 
@@ -23,12 +23,13 @@ return (
         paddingBottom: Math.max(insets.bottom, 10),
       }
     ]}>
-      <ThemedText style={[styles.text, { color: textColor }]}>
+      <ThemedText style={[styles.text, { color: buttonPrimaryText }]}>
         {i18n.t('common.noInternet')}
       </ThemedText>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   banner: {

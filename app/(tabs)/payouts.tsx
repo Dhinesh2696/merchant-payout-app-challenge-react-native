@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  useColorScheme,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -20,16 +21,21 @@ import {
   resetPayoutStatus,
   selectPayoutState,
 } from "@/store/actions/payoutActions";
-import { useThemeColor } from "@/hooks/use-theme-color";
-import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useThemeColor } from "../../hooks/use-theme-color";
 import i18n from "@/constants/i18n";
 import { CurrencySelector } from "@/components/currency-selector";
 import { isValidIBAN } from "@/utils/validation";
+import { Colors } from "@/constants/theme";
+
 
 export default function PayoutsScreen() {
   const dispatch = useDispatch();
   const { loading, error, success, result } = useSelector(selectPayoutState);
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? "light"];
+  const iconColor = useThemeColor({}, "icon");
+
 
   // Form State
   const [amount, setAmount] = useState("");
@@ -39,16 +45,6 @@ export default function PayoutsScreen() {
   // UI State
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showResult, setShowResult] = useState(false);
-
-  const buttonPrimary = useThemeColor({}, "buttonPrimary");
-  const buttonDisabled = useThemeColor({}, "buttonDisabled");
-  const buttonDisabledText = useThemeColor({}, "buttonDisabledText");
-  const textColor = useThemeColor({}, "text");
-  const backgroundColor = useThemeColor({}, "background");
-  const cardBackgroundColor = useThemeColor({}, "cardBackground");
-  const inputBackgroundColor = useThemeColor({}, "inputBackground");
-  const borderColor = useThemeColor({}, "border");
-  const secondaryTextColor = useThemeColor({}, "secondaryText");
 
   const isFormValid =
     amount.length > 0 && parseFloat(amount) > 0 && isValidIBAN(iban);
@@ -61,7 +57,6 @@ export default function PayoutsScreen() {
   }, [success, error]);
 
   const handleAmountChange = (text: string) => {
-    // Only allow numbers and one decimal point
     const filtered = text.replace(/[^0-9.]/g, "");
     const parts = filtered.split(".");
     if (parts.length > 2) return;
@@ -94,111 +89,80 @@ export default function PayoutsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: backgroundColor }}>
-      <ThemedView style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView style={styles.safeArea}>
+      <ThemedView style={styles.container}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <ScrollView contentContainerStyle={styles.scrollContent}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
             <ThemedView style={styles.header}>
               <ThemedText style={styles.title}>
                 {i18n.t("payout.title")}
               </ThemedText>
+              <ThemedText style={[styles.subtitle, { color: theme.secondaryText }]}>
+                Transfer funds to your bank account securely.
+              </ThemedText>
             </ThemedView>
 
-            <View style={styles.form}>
-              {/* Row: Amount & Currency */}
-              <View style={styles.row}>
-                <View style={styles.amountCol}>
-                  <ThemedText style={[styles.label, { color: textColor }]}>
-                    {i18n.t("payout.amountLabel")}
-                  </ThemedText>
-                  <View
-                    style={[
-                      styles.inputCard,
-                      { backgroundColor: inputBackgroundColor, borderColor },
-                    ]}
-                  >
+            <ThemedView style={styles.form}>
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={[styles.label, { color: theme.text }]}>
+                  {i18n.t("payout.amountLabel")}
+                </ThemedText>
+                <ThemedView style={styles.row}>
+                  <ThemedView style={[styles.amountContainer, { borderColor: theme.border }]}>
                     <TextInput
-                      style={[styles.input, { color: textColor }]}
-                      placeholder={i18n.t("payout.amountPlaceholder")}
-                      placeholderTextColor="#999"
+                      style={[styles.amountInput, { color: theme.text }]}
+                      placeholder="0.00"
+                      placeholderTextColor={theme.icon}
                       keyboardType="decimal-pad"
                       value={amount}
                       onChangeText={handleAmountChange}
                     />
-                  </View>
-                </View>
-                <View style={styles.currencyCol}>
-                  <ThemedText style={[styles.label, { color: textColor }]}>
-                    {i18n.t("payout.currencyLabel")}
-                  </ThemedText>
+                  </ThemedView>
                   <CurrencySelector
                     value={currency}
                     onSelect={setCurrency}
-                    style={[
-                      styles.currencyCard,
-                      { backgroundColor: cardBackgroundColor, borderColor },
-                    ]}
+                    style={styles.currencySelector}
                   />
-                </View>
-              </View>
+                </ThemedView>
+              </ThemedView>
 
-              {/* IBAN Section */}
-              <View style={styles.inputSection}>
-                <ThemedText style={[styles.label, { color: textColor }]}>
+              <ThemedView style={styles.inputGroup}>
+                <ThemedText style={[styles.label, { color: theme.text }]}>
                   {i18n.t("payout.ibanLabel")}
                 </ThemedText>
-                <View
-                  style={[
-                    styles.inputCard,
-                    { backgroundColor: inputBackgroundColor, borderColor },
-                  ]}
-                >
-                  <TextInput
-                    style={[styles.input, { color: textColor, fontSize: 16 }]}
-                    placeholder={i18n.t("payout.ibanPlaceholder")}
-                    placeholderTextColor="#BBB"
-                    autoCapitalize="characters"
-                    value={iban}
-                    onChangeText={setIban}
-                    multiline={false}
-                    numberOfLines={1}
-                    maxLength={34}
-                  />
-                </View>
-                <ThemedText
-                  style={[styles.hint, { color: secondaryTextColor }]}
-                >
+                <TextInput
+                  style={[styles.ibanInput, { color: theme.text, borderColor: theme.border }]}
+                  placeholder={i18n.t("payout.ibanPlaceholder")}
+                  placeholderTextColor={theme.icon}
+                  autoCapitalize="characters"
+                  value={iban}
+                  onChangeText={setIban}
+                  maxLength={34}
+                />
+                <ThemedText style={[styles.hint, { color: theme.secondaryText }]}>
                   {i18n.t("payout.ibanHint")}
                 </ThemedText>
-              </View>
+              </ThemedView>
 
               <TouchableOpacity
                 style={[
                   styles.submitButton,
-                  {
-                    backgroundColor: isFormValid
-                      ? buttonPrimary
-                      : buttonDisabled,
-                  },
+                  { backgroundColor: isFormValid ? theme.buttonPrimary : theme.buttonDisabled }
                 ]}
                 onPress={handleInitiatePress}
                 disabled={!isFormValid}
               >
-                <ThemedText
-                  style={[
-                    styles.submitButtonText,
-                    {
-                      color: isFormValid ? "#FFF" : buttonDisabledText,
-                    },
-                  ]}
-                >
+                <ThemedText style={[styles.submitButtonText, { color: isFormValid ? theme.buttonPrimaryText : theme.buttonDisabledText }]}>
                   {i18n.t("payout.continue")}
                 </ThemedText>
               </TouchableOpacity>
-            </View>
+            </ThemedView>
           </ScrollView>
         </KeyboardAvoidingView>
 
@@ -225,92 +189,83 @@ export default function PayoutsScreen() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
   scrollContent: {
     padding: 24,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   header: {
-    marginBottom: 40,
-    backgroundColor: "transparent",
+    marginBottom: 48,
   },
   title: {
     fontSize: 28,
-    lineHeight: 34,
     fontWeight: "800",
+    lineHeight: 36,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 15,
+    marginTop: 8,
   },
   form: {
-    gap: 24,
+    gap: 32,
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   row: {
     flexDirection: "row",
-    gap: 16,
+    gap: 12,
   },
-  amountCol: {
-    flex: 4,
-  },
-  currencyCol: {
+  amountContainer: {
     flex: 1,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "700",
-    marginBottom: 4,
-    opacity: 0.8,
-  },
-  inputCard: {
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 60,
+    height: 56,
+    borderWidth: 1.5,
     paddingHorizontal: 16,
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
-  currencyCard: {
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 60,
+  amountInput: {
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  currencySelector: {
+    width: 100,
+    height: 56,
+    borderWidth: 1.5,
+    borderRadius: 0,
+    backgroundColor: "transparent",
+  },
+  ibanInput: {
+    height: 56,
+    borderWidth: 1.5,
     paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  input: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "500",
-    width: "100%",
-  },
-  inputSection: {
-    marginTop: 0,
-  },
-  ibanSection: {
-    marginTop: 0,
   },
   hint: {
-    fontSize: 13,
-    marginTop: 6,
+    fontSize: 12,
+    marginTop: 4,
   },
   submitButton: {
-    height: 60,
-    borderRadius: 12,
+    height: 56,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
-  },
-  submitButtonDisabled: {
-    backgroundColor: "#E5E5EA",
+    marginTop: 8,
   },
   submitButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "700",
   },
-  submitButtonTextDisabled: {
-    color: "#AEAEB2",
-  },
 });
+

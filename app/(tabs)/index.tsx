@@ -12,10 +12,10 @@ import { ThemedView } from "@/components/themed-view";
 import { ThemedButton } from "@/components/themed-button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CurrencyText } from "@/components/currency-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { useMerchantData } from "../../hooks/use-merchant-data";
 import { Colors } from "../../constants/theme";
 import i18n from "../../constants/i18n";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function HomeScreen() {
   if (loading && !balance) {
     return (
       <ThemedView style={styles.centered}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="small" color={theme.text} />
       </ThemedView>
     );
   }
@@ -39,8 +39,11 @@ export default function HomeScreen() {
   if (error && !balance) {
     return (
       <ThemedView style={styles.centered}>
-        <ThemedText>{error}</ThemedText>
-        <TouchableOpacity onPress={fetchMerchantData}>
+        <ThemedText style={[styles.errorText, { color: theme.negative }]}>{error}</ThemedText>
+        <TouchableOpacity
+          onPress={fetchMerchantData}
+          style={styles.retryButton}
+        >
           <ThemedText style={styles.retryText}>
             {i18n.t("home.retry")}
           </ThemedText>
@@ -48,6 +51,7 @@ export default function HomeScreen() {
       </ThemedView>
     );
   }
+
   const renderHeader = () => {
     return (
       <ThemedView style={styles.header}>
@@ -60,52 +64,81 @@ export default function HomeScreen() {
 
   const renderBalance = () => {
     return (
-      <ThemedView style={styles.section}>
-        <ThemedText style={styles.sectionTitle}>
-          {i18n.t("home.balance")}
-        </ThemedText>
-        {balance && (
-          <View style={styles.balanceContainer}>
-            <View style={styles.balanceItem}>
-              <ThemedText style={styles.balanceLabel}>
-                {i18n.t("home.available")}
-              </ThemedText>
-              <CurrencyText
-                amount={balance.available_balance}
-                currency={balance.currency}
-                style={styles.balanceAmount}
-              />
-            </View>
-            <View style={styles.balanceItem}>
-              <ThemedText style={styles.balanceLabel}>
-                {i18n.t("home.pending")}
-              </ThemedText>
-              <CurrencyText
-                amount={balance.pending_balance}
-                currency={balance.currency}
-                style={styles.balanceAmount}
-              />
-            </View>
-          </View>
-        )}
+      <ThemedView style={styles.balanceSection}>
+        <ThemedView style={styles.balanceItem}>
+          <ThemedText style={[styles.balanceLabel, { color: theme.secondaryText }]}>
+            {i18n.t("home.available")}
+          </ThemedText>
+          <CurrencyText
+            amount={balance?.available_balance ?? 0}
+            currency={balance?.currency ?? "GBP"}
+            style={[styles.availableAmount, { color: theme.text }]}
+          />
+        </ThemedView>
+
+        <ThemedView
+          style={[styles.divider, { backgroundColor: theme.border }]}
+        />
+
+        <ThemedView style={styles.balanceItemSmall}>
+          <ThemedText style={[styles.balanceLabelSmall, { color: theme.secondaryText }]}>
+            {i18n.t("home.pending")}
+          </ThemedText>
+          <CurrencyText
+            amount={balance?.pending_balance ?? 0}
+            currency={balance?.currency ?? "GBP"}
+            style={[styles.pendingAmount, { color: theme.secondaryText }]}
+          />
+        </ThemedView>
       </ThemedView>
     );
   };
 
   const renderRecentActivity = () => {
     return (
-      <ThemedView style={styles.section}>
-        <ThemedText style={styles.sectionTitle}>
-          {i18n.t("home.recentActivity")}
-        </ThemedText>
-        {recentActivity.map((item) => (
-          <View
-            key={item.id}
-            style={[styles.activityItem, { borderBottomColor: theme.border }]}
+      <ThemedView style={styles.activitySection}>
+        <ThemedView style={styles.sectionHeader}>
+          <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+            {i18n.t("home.recentActivity")}
+          </ThemedText>
+          <TouchableOpacity
+            onPress={() => router.push("/modal")}
+            style={[styles.showMoreButton, { borderColor: theme.tint }]}
           >
-            <ThemedText style={styles.activityDescription}>
-              {item.description}
+            <ThemedText style={[styles.showMoreText, { color: theme.tint }]}>
+              {i18n.t("home.showMore")}
             </ThemedText>
+          </TouchableOpacity>
+        </ThemedView>
+
+        {recentActivity.map((item, index) => (
+          <ThemedView
+            key={item.id}
+            style={[
+              styles.activityItem,
+              index !== recentActivity.length - 1 && {
+                borderBottomColor: theme.border,
+                borderBottomWidth: 1,
+              },
+            ]}
+          >
+            <ThemedView style={[styles.activityIconContainer, { backgroundColor: theme.buttonDisabled }]}>
+              <Ionicons
+                name={
+                  item.amount < 0 ? "arrow-up-outline" : "arrow-down-outline"
+                }
+                size={18}
+                color={item.amount < 0 ? theme.negative : theme.positive}
+              />
+            </ThemedView>
+            <ThemedView style={styles.activityDetails}>
+              <ThemedText style={[styles.activityDescription, { color: theme.text }]}>
+                {item.description}
+              </ThemedText>
+              <ThemedText style={[styles.activitySubtext, { color: theme.secondaryText }]}>
+                {item.type}
+              </ThemedText>
+            </ThemedView>
             <CurrencyText
               amount={item.amount}
               currency={item.currency}
@@ -114,22 +147,16 @@ export default function HomeScreen() {
                 { color: item.amount < 0 ? theme.negative : theme.positive },
               ]}
             />
-          </View>
+          </ThemedView>
         ))}
-        <ThemedButton
-          variant="secondary"
-          style={styles.showMoreButton}
-          onPress={() => router.push("/modal")}
-        >
-          <ThemedText style={styles.showMoreText}>
-            {i18n.t("home.showMore")}
-          </ThemedText>
-        </ThemedButton>
       </ThemedView>
     );
   };
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.background }]}
+    >
       <ThemedView style={styles.container}>
         {renderHeader()}
         {renderBalance()}
@@ -140,77 +167,136 @@ export default function HomeScreen() {
 }
 
 const styles = RNStyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-  },
-  header: {
-    paddingTop: 30,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: "800",
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 16,
+    paddingHorizontal: 24,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  balanceContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  header: {
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  headerTitle: {
+    fontSize: 32,
+    fontWeight: "800",
+    lineHeight: 40,
+    letterSpacing: -1,
+  },
+  balanceSection: {
+    marginBottom: 48,
   },
   balanceItem: {
-    flex: 1,
+    marginBottom: 12,
   },
   balanceLabel: {
-    fontSize: 13,
+    fontSize: 14,
+    fontWeight: "600",
     marginBottom: 4,
-    opacity: 0.6,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
-  balanceAmount: {
-    fontSize: 22,
+  availableAmount: {
+    fontSize: 48,
+    fontWeight: "700",
+    lineHeight: 56,
+    letterSpacing: -2,
+  },
+  divider: {
+    height: 1,
+    width: "100%",
+    marginVertical: 20,
+  },
+  balanceItemSmall: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  balanceLabelSmall: {
+    fontSize: 16,
+  },
+  pendingAmount: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  activitySection: {
+    flex: 1,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  showMoreButton: {
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+  },
+  showMoreText: {
+    fontSize: 14,
     fontWeight: "700",
   },
   activityItem: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 16,
-    borderBottomWidth: 1,
   },
-  activityDescription: {
-    flex: 1,
-    fontSize: 14,
-  },
-  activityAmount: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  showMoreButton: {
-    marginTop: 24,
-    borderRadius: 12,
-    height: 50,
+  activityIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 12,
   },
-  showMoreText: {
-    color: "#007AFF",
-    fontSize: 16,
+  activityDetails: {
+    flex: 1,
+  },
+  activityDescription: {
+    fontSize: 15,
     fontWeight: "600",
   },
-  retryText: {
-    marginTop: 12,
-    color: "#007AFF",
+  activitySubtext: {
+    fontSize: 13,
+    marginTop: 2,
+    textTransform: "capitalize",
+  },
+  activityAmount: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  payoutButton: {
+    marginTop: "auto",
+    marginBottom: 30,
+    borderRadius: 0,
+    height: 56,
+  },
+  payoutButtonText: {
     fontSize: 16,
+    fontWeight: "700",
+  },
+  retryButton: {
+    marginTop: 16,
+    padding: 12,
+  },
+  retryText: {
+    fontWeight: "600",
+    textDecorationLine: "underline",
+  },
+  errorText: {
+    textAlign: "center",
   },
 });
+
