@@ -79,9 +79,6 @@ export default function PayoutsScreen() {
     const amountInCents = Math.round(parseFloat(amount) * 100);
 
     try {
-      // Step 4: Capture Device Identity
-      const deviceId = await ScreenSecurity.getDeviceId();
-
       // Step 5: Native Biometric for Payouts over £1,000.00
       if (amountInCents >= BIOMETRIC_THRESHOLD) {
         const authenticated = await ScreenSecurity.isBiometricAuthenticated(
@@ -94,13 +91,11 @@ export default function PayoutsScreen() {
         }
       }
 
-
       dispatch(
         createPayoutRequest({
           amount: amountInCents,
           currency,
           iban: iban.trim(),
-          device_id: deviceId,
         }),
       );
     } catch (err: any) {
