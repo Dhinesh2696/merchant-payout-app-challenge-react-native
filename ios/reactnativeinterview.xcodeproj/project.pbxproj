@@ -10,8 +10,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2287190BFEC37F362969EEE9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 88895CDD47D3511F6B800D6B /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		685843722F96BDD8006842A5 /* ScreenSecurityModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685843712F96BDD8006842A5 /* ScreenSecurityModule.swift */; };
-		685843732F96BDD8006842A5 /* ScreenSecurityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 685843702F96BDD8006842A5 /* ScreenSecurityModule.m */; };
+		68E2D95D2F9758E100A672F0 /* ScreenSecurityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 68E2D95B2F9758E100A672F0 /* ScreenSecurityModule.m */; };
+		68E2D95E2F9758E100A672F0 /* ScreenSecurityModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E2D95C2F9758E100A672F0 /* ScreenSecurityModule.swift */; };
 		987694936CEDCDEDBD9419E3 /* libPods-reactnativeinterview.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C0C8294F62758D022D49352F /* libPods-reactnativeinterview.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F01C60403128CCA65374A438 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB68A09EA537410E388B4699 /* ExpoModulesProvider.swift */; };
@@ -23,8 +23,8 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = reactnativeinterview/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = reactnativeinterview/Info.plist; sourceTree = "<group>"; };
 		2AD6735705776B112C18B910 /* Pods-reactnativeinterview.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativeinterview.debug.xcconfig"; path = "Target Support Files/Pods-reactnativeinterview/Pods-reactnativeinterview.debug.xcconfig"; sourceTree = "<group>"; };
-		685843702F96BDD8006842A5 /* ScreenSecurityModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScreenSecurityModule.m; sourceTree = "<group>"; };
-		685843712F96BDD8006842A5 /* ScreenSecurityModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenSecurityModule.swift; sourceTree = "<group>"; };
+		68E2D95B2F9758E100A672F0 /* ScreenSecurityModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScreenSecurityModule.m; sourceTree = "<group>"; };
+		68E2D95C2F9758E100A672F0 /* ScreenSecurityModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenSecurityModule.swift; sourceTree = "<group>"; };
 		74C5DDB48193744F3574574D /* Pods-reactnativeinterview.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativeinterview.release.xcconfig"; path = "Target Support Files/Pods-reactnativeinterview/Pods-reactnativeinterview.release.xcconfig"; sourceTree = "<group>"; };
 		88895CDD47D3511F6B800D6B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = reactnativeinterview/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = reactnativeinterview/SplashScreen.storyboard; sourceTree = "<group>"; };
@@ -51,6 +51,8 @@
 		13B07FAE1A68108700A75B9A /* reactnativeinterview */ = {
 			isa = PBXGroup;
 			children = (
+				68E2D95B2F9758E100A672F0 /* ScreenSecurityModule.m */,
+				68E2D95C2F9758E100A672F0 /* ScreenSecurityModule.swift */,
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
 				F11748442D0722820044C1D9 /* reactnativeinterview-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
@@ -58,8 +60,6 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				88895CDD47D3511F6B800D6B /* PrivacyInfo.xcprivacy */,
-				685843702F96BDD8006842A5 /* ScreenSecurityModule.m */,
-				685843712F96BDD8006842A5 /* ScreenSecurityModule.swift */,
 			);
 			name = reactnativeinterview;
 			sourceTree = "<group>";
@@ -334,10 +334,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68E2D95D2F9758E100A672F0 /* ScreenSecurityModule.m in Sources */,
+				68E2D95E2F9758E100A672F0 /* ScreenSecurityModule.swift in Sources */,
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				F01C60403128CCA65374A438 /* ExpoModulesProvider.swift in Sources */,
-				685843722F96BDD8006842A5 /* ScreenSecurityModule.swift in Sources */,
-				685843732F96BDD8006842A5 /* ScreenSecurityModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,6 +27,9 @@ import i18n from "@/constants/i18n";
 import { CurrencySelector } from "@/components/currency-selector";
 import { isValidIBAN } from "@/utils/validation";
 import { Colors } from "@/constants/theme";
+import * as ScreenSecurity from "@/modules/screen-security";
+import { Alert } from "react-native";
+
 
 
 export default function PayoutsScreen() {
@@ -35,6 +38,10 @@ export default function PayoutsScreen() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
   const iconColor = useThemeColor({}, "icon");
+
+  // Threshold for biometric authentication: 1,000.00 in current currency
+  const BIOMETRIC_THRESHOLD = 1000 * 100; // 100,000 cents/pence
+
 
 
   // Form State
@@ -68,16 +75,44 @@ export default function PayoutsScreen() {
     setShowConfirmation(true);
   };
 
-  const handleConfirmPayout = () => {
+  const handleConfirmPayout = async () => {
     const amountInCents = Math.round(parseFloat(amount) * 100);
-    dispatch(
-      createPayoutRequest({
-        amount: amountInCents,
-        currency,
-        iban: iban.trim(),
-      }),
-    );
+
+    try {
+      // Step 4: Capture Device Identity
+      const deviceId = await ScreenSecurity.getDeviceId();
+
+      // Step 5: Native Biometric for Payouts over £1,000.00
+      if (amountInCents >= BIOMETRIC_THRESHOLD) {
+        const authenticated = await ScreenSecurity.isBiometricAuthenticated();
+        if (!authenticated) {
+          // Abort if user canceled
+          return;
+        }
+      }
+
+      dispatch(
+        createPayoutRequest({
+          amount: amountInCents,
+          currency,
+          iban: iban.trim(),
+          device_id: deviceId,
+        }),
+      );
+    } catch (err: any) {
+      if (
+        err.code === "biometric_not_enrolled" ||
+        err.code === "biometric_not_available"
+      ) {
+        Alert.alert("Security Required", err.message);
+      } else {
+        console.error("Payout error:", err);
+        // Fallback for other errors
+        Alert.alert("Error", i18n.t("common.error"));
+      }
+    }
   };
+
 
   const handleCloseResult = () => {
     setShowResult(false);
