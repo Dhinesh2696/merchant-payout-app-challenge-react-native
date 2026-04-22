@@ -13,6 +13,7 @@ Your task is to build a merchant dashboard and payout flow that allows users to:
 
 ## 📑 Table of Contents
 
+* [🚀 Getting Started](#-getting-started)
 * [🛠️ Tech Stack](#️-tech-stack)
 * [📡 API Documentation](#-api-documentation)
   * [Available Endpoints](#available-endpoints)
@@ -24,7 +25,51 @@ Your task is to build a merchant dashboard and payout flow that allows users to:
   * [Step 3: Payout Initiation Form & Confirmation](#step-3-payout-initiation-form--confirmation)
   * [Step 4: Native Device Identity](#step-4-native-device-identity)
   * [Step 5: Native Biometric for Payouts over £1,000.00](#step-5-native-biometric-for-payouts-over-£100000)
-  * [Step 6: Native Security Events  (Native Module)](#step-6-native-security-events--native-module)
+  * [Step 6: Native Security Events (Native Module)](#step-6-native-security-events--native-module)
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to get the project up and running on your local machine.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or newer recommended)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Expo Go](https://expo.dev/go) app (for physical device testing) or an Android/iOS emulator
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Dhinesh2696/merchant-payout-app-challenge-react-native.git
+   cd merchant-payout-app-challenge-react-native
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running the App
+
+Start the development server:
+```bash
+npm run start
+```
+
+Or run directly on your preferred platform:
+- **iOS**: `npm run ios`
+- **Android**: `npm run android`
+- **Web**: `npm run web`
+
+### Running Tests
+
+To run the unit tests:
+```bash
+npm test
+```
 
 ---
 
