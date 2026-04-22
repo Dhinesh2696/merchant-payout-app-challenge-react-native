@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -9,40 +9,32 @@ import {
   ScrollView,
   useColorScheme,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { PayoutConfirmation } from "@/components/payout-confirmation";
 import { PayoutResult } from "@/components/payout-result";
 import { Currency } from "@/types/api";
-import {
-  createPayoutRequest,
-  resetPayoutStatus,
-  selectPayoutState,
-} from "@/store/actions/payoutActions";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "../../hooks/use-theme-color";
-import i18n from "@/constants/i18n";
+import { usePayoutData } from "../../hooks/use-payout-data";
+import { useFocusEffect } from "expo-router";
+import i18n from "../../constants/i18n";
 import { CurrencySelector } from "@/components/currency-selector";
 import { isValidIBAN } from "@/utils/validation";
 import { Colors } from "@/constants/theme";
 import * as ScreenSecurity from "@/modules/screen-security";
 import { Alert } from "react-native";
 
-
-
 export default function PayoutsScreen() {
-  const dispatch = useDispatch();
-  const { loading, error, success, result } = useSelector(selectPayoutState);
+  const { loading, error, success, result, initiatePayout, resetPayout } =
+    usePayoutData();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? "light"];
   const iconColor = useThemeColor({}, "icon");
 
   // Threshold for biometric authentication: 1,000.00 in current currency
   const BIOMETRIC_THRESHOLD = 1000 * 100; // 100,000 cents/pence
-
-
 
   // Form State
   const [amount, setAmount] = useState("");
@@ -62,6 +54,22 @@ export default function PayoutsScreen() {
       setShowResult(true);
     }
   }, [success, error]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = ScreenSecurity.addScreenshotListener(() => {
+        Alert.alert(
+          i18n.t("security.alertTitle"),
+          i18n.t("security.screenshotDetected"),
+          [{ text: i18n.t("common.done") }],
+        );
+      });
+
+      return () => {
+        subscription.remove();
+      };
+    }, []),
+  );
 
   const handleAmountChange = (text: string) => {
     const filtered = text.replace(/[^0-9.]/g, "");
@@ -91,13 +99,11 @@ export default function PayoutsScreen() {
         }
       }
 
-      dispatch(
-        createPayoutRequest({
-          amount: amountInCents,
-          currency,
-          iban: iban.trim(),
-        }),
-      );
+      initiatePayout({
+        amount: amountInCents,
+        currency,
+        iban: iban.trim(),
+      });
     } catch (err: any) {
       if (
         err.code === "biometric_not_enrolled" ||
@@ -110,9 +116,7 @@ export default function PayoutsScreen() {
         Alert.alert(i18n.t("common.error"), i18n.t("result.errorDefault"));
       }
     }
-
   };
-
 
   const handleCloseResult = () => {
     setShowResult(false);
@@ -120,7 +124,7 @@ export default function PayoutsScreen() {
       setAmount("");
       setIban("");
     }
-    dispatch(resetPayoutStatus());
+    resetPayout();
   };
 
   return (
@@ -330,4 +334,3 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
-

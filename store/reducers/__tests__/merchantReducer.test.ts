@@ -40,6 +40,8 @@ describe('merchantReducer', () => {
       activity: [
         { id: '1', type: 'payout', amount: 5000, currency: 'GBP', date: '2024-01-01', description: 'Test', status: 'completed' }
       ],
+      next_cursor: '1',
+      has_more: true,
     };
     const actual = reducer(initialState, fetchMerchantDataSuccess(payload));
     expect(actual.loading).toBe(false);
@@ -50,6 +52,7 @@ describe('merchantReducer', () => {
     });
     expect(actual.activity.items).toHaveLength(1);
     expect(actual.activity.nextCursor).toBe('1');
+    expect(actual.activity.hasMore).toBe(true);
   });
 
   it('should handle fetchActivityRequest', () => {

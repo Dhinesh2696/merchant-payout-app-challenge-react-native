@@ -21,6 +21,8 @@ export interface MerchantDataResponse {
   pending_balance: number; // in lowest denomination of the currency
   currency: Currency;
   activity: ActivityItem[];
+  next_cursor: string | null;
+  has_more: boolean;
 }
 
 export interface ActivityItem {

@@ -54,14 +54,10 @@ const merchantSlice = createSlice({
         currency: action.payload.currency,
       };
       state.activity.items = action.payload.activity;
-      // Seed pagination state from the initial activity list
-      if (action.payload.activity.length > 0) {
-        state.activity.nextCursor = action.payload.activity[action.payload.activity.length - 1].id;
-        state.activity.hasMore = true; // Safe to assume more exist for first load
-      } else {
-        state.activity.nextCursor = null;
-        state.activity.hasMore = false;
-      }
+      // Store pagination state from the initial merchant data load
+      // so the activity modal can continue where the dashboard left off.
+      state.activity.nextCursor = action.payload.next_cursor;
+      state.activity.hasMore = action.payload.has_more;
     },
     fetchMerchantDataFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;

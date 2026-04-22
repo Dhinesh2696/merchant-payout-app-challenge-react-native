@@ -98,11 +98,14 @@ export const handlers = [
     }
 
     // Otherwise, return full merchant data (for backward compatibility)
+    const paginatedActivity = getPaginatedActivity(null, 15);
     const response: MerchantDataResponse = {
       available_balance: getAvailableBalance(),
       pending_balance: getPendingBalance(),
       currency: getCurrentCurrency(),
-      activity: generateMockActivity(),
+      activity: paginatedActivity.items,
+      next_cursor: paginatedActivity.next_cursor,
+      has_more: paginatedActivity.has_more,
     };
 
     logRequest('GET', request.url, 200, response);

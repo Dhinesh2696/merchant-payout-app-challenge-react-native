@@ -14,7 +14,7 @@ import { Colors } from "../constants/theme";
 import i18n from "../constants/i18n";
 import { CurrencyText } from "@/components/currency-text";
 import moment from "moment";
-import { DATE_FORMAT } from "../constants/date";
+import { DATE_FORMAT, FULL_DATE_FORMAT } from "../constants/date";
 import { capitalize } from "../utils/format";
 import { useMerchantData } from "../hooks/use-merchant-data";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,28 +27,28 @@ export default function ModalScreen() {
 
   const groupedActivity = useMemo(() => {
     const groups: { [key: string]: any[] } = {};
-    
+
     activity.items.forEach((item: any) => {
       const date = moment(item.date);
       let title = "";
-      
-      if (date.isSame(moment(), 'day')) {
+
+      if (date.isSame(moment(), "day")) {
         title = "Today";
-      } else if (date.isSame(moment().subtract(1, 'days'), 'day')) {
+      } else if (date.isSame(moment().subtract(1, "days"), "day")) {
         title = "Yesterday";
       } else {
         title = date.format("MMMM YYYY");
       }
-      
+
       if (!groups[title]) {
         groups[title] = [];
       }
       groups[title].push(item);
     });
 
-    return Object.keys(groups).map(title => ({
+    return Object.keys(groups).map((title) => ({
       title,
-      data: groups[title]
+      data: groups[title],
     }));
   }, [activity.items]);
 
@@ -73,7 +73,7 @@ export default function ModalScreen() {
         <ThemedText
           style={[styles.activityDate, { color: theme.secondaryText }]}
         >
-          {moment(item.date).format("DD MMM YYYY, HH:mm")} •{" "}
+          {moment(item.date).format(FULL_DATE_FORMAT)} •{" "}
           {capitalize(item.status)}
         </ThemedText>
       </ThemedView>
@@ -90,9 +90,17 @@ export default function ModalScreen() {
     </ThemedView>
   );
 
-  const renderSectionHeader = ({ section: { title } }: { section: { title: string } }) => (
-    <ThemedView style={[styles.sectionHeader, { backgroundColor: theme.background }]}>
-      <ThemedText style={[styles.sectionTitle, { color: theme.secondaryText }]}>{title}</ThemedText>
+  const renderSectionHeader = ({
+    section: { title },
+  }: {
+    section: { title: string };
+  }) => (
+    <ThemedView
+      style={[styles.sectionHeader, { backgroundColor: theme.background }]}
+    >
+      <ThemedText style={[styles.sectionTitle, { color: theme.secondaryText }]}>
+        {title}
+      </ThemedText>
     </ThemedView>
   );
 
@@ -102,7 +110,13 @@ export default function ModalScreen() {
         <ThemedText style={styles.headerTitle}>
           {i18n.t("modal.title")}
         </ThemedText>
-        <TouchableOpacity onPress={() => router.back()} style={[styles.closeButton, { backgroundColor: theme.buttonDisabled }]}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={[
+            styles.closeButton,
+            { backgroundColor: theme.buttonDisabled },
+          ]}
+        >
           <Ionicons name="close" size={24} color={theme.text} />
         </TouchableOpacity>
       </ThemedView>
@@ -117,13 +131,40 @@ export default function ModalScreen() {
         onEndReachedThreshold={0.5}
         stickySectionHeadersEnabled={true}
         showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <ThemedView style={[styles.separator, { backgroundColor: theme.border }]} />}
+        ItemSeparatorComponent={() => (
+          <ThemedView
+            style={[styles.separator, { backgroundColor: theme.border }]}
+          />
+        )}
         ListFooterComponent={
           activity.loading ? (
             <ThemedView style={styles.loaderContainer}>
               <ActivityIndicator size="small" color={theme.text} />
             </ThemedView>
-          ) : <ThemedView style={{ height: 40 }} />
+          ) : activity.error ? (
+            <ThemedView style={styles.errorFooter}>
+              <ThemedText
+                style={[styles.errorSubtext, { color: theme.secondaryText }]}
+              >
+                {i18n.t("errors.fetchActivity")}
+              </ThemedText>
+              <TouchableOpacity
+                onPress={() => fetchMoreActivity()}
+                style={[
+                  styles.retryFooterButton,
+                  { backgroundColor: theme.buttonDisabled },
+                ]}
+              >
+                <ThemedText
+                  style={[styles.retryFooterText, { color: theme.tint }]}
+                >
+                  {i18n.t("common.tryAgain")}
+                </ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+          ) : (
+            <ThemedView style={{ height: 40 }} />
+          )
         }
       />
     </ThemedView>
@@ -204,5 +245,22 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
     alignItems: "center",
   },
+  errorFooter: {
+    paddingVertical: 32,
+    alignItems: "center",
+    gap: 12,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  retryFooterButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryFooterText: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
 });
-
