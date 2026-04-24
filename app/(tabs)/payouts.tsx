@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -45,8 +45,12 @@ export default function PayoutsScreen() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const isFormValid =
-    amount.length > 0 && parseFloat(amount) > 0 && isValidIBAN(iban);
+  const isFormValid = useMemo(() => {
+    if (amount.length === 0) return false;
+    const numericAmount = parseFloat(amount);
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) return false;
+    return isValidIBAN(iban);
+  }, [amount, iban]);
 
   useEffect(() => {
     if (success || error) {

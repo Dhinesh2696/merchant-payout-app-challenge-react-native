@@ -1,5 +1,5 @@
-import moment from 'moment';
 import { Currency } from '../types/api';
+import { format, parseISO } from "date-fns";
 
 /**
  * Formats a given amount in the lowest denomination (e.g. pence) 
@@ -19,7 +19,8 @@ export const formatCurrency = (amount: number, currency: Currency): string => {
  * Formats an ISO date string into a human-readable long date format.
  */
 export const formatLongDate = (dateString: string): string => {
-  return moment(dateString).format('MMMM Do YYYY, h:mm:ss a');
+  const date = parseISO(dateString);
+  return format(date, "MMMM do yyyy, h:mm:ss a");
 };
 
 /**

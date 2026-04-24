@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import {
   StyleSheet,
   ActivityIndicator,
-  View,
   useColorScheme,
   TouchableOpacity,
   SectionList,
@@ -13,8 +12,8 @@ import { ThemedView } from "@/components/themed-view";
 import { Colors } from "../constants/theme";
 import i18n from "../constants/i18n";
 import { CurrencyText } from "@/components/currency-text";
-import moment from "moment";
-import { DATE_FORMAT, FULL_DATE_FORMAT } from "../constants/date";
+import { format, isSameDay, parseISO, subDays } from "date-fns";
+import { FULL_DATE_FORMAT } from "../constants/date";
 import { capitalize } from "../utils/format";
 import { useMerchantData } from "../hooks/use-merchant-data";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,17 +26,19 @@ export default function ModalScreen() {
 
   const groupedActivity = useMemo(() => {
     const groups: { [key: string]: any[] } = {};
+    const today = new Date();
+    const yesterday = subDays(today, 1);
 
     activity.items.forEach((item: any) => {
-      const date = moment(item.date);
+      const date = parseISO(item.date);
       let title = "";
 
-      if (date.isSame(moment(), "day")) {
+      if (isSameDay(date, today)) {
         title = "Today";
-      } else if (date.isSame(moment().subtract(1, "days"), "day")) {
+      } else if (isSameDay(date, yesterday)) {
         title = "Yesterday";
       } else {
-        title = date.format("MMMM YYYY");
+        title = format(date, "MMMM yyyy");
       }
 
       if (!groups[title]) {
@@ -73,7 +74,7 @@ export default function ModalScreen() {
         <ThemedText
           style={[styles.activityDate, { color: theme.secondaryText }]}
         >
-          {moment(item.date).format(FULL_DATE_FORMAT)} •{" "}
+          {format(parseISO(item.date), FULL_DATE_FORMAT)} •{" "}
           {capitalize(item.status)}
         </ThemedText>
       </ThemedView>

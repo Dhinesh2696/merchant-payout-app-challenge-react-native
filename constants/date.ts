@@ -1,2 +1,3 @@
-export const DATE_FORMAT = 'DD MMM YYYY';
-export const FULL_DATE_FORMAT = 'DD MM YYYY, HH:mm';
+// date-fns format tokens: https://date-fns.org/docs/format
+export const DATE_FORMAT = "dd MMM yyyy";
+export const FULL_DATE_FORMAT = "dd MM yyyy, HH:mm";
